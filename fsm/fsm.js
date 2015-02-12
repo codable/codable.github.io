@@ -615,7 +615,6 @@ function drawArrow(c, x, y, angle) {
 }
 
 function canvasHasFocus() {
-  console.log(document.activeElement == canvas);
   return document.activeElement == canvas;
 }
 
@@ -701,9 +700,11 @@ function drawUsing(c) {
   c.restore();
 }
 
+var codes = '';
 function draw() {
   drawUsing(canvas.getContext('2d'));
   saveBackup();
+  document.getElementById('codes').value = codes;
 }
 
 function selectObject(x, y) {
@@ -1101,7 +1102,7 @@ function saveBackup() {
     }
   }
 
-  document.getElementById('codes').value = lines.join('\n');
+  codes = lines.join('\n');
   localStorage['fsm'] = JSON.stringify(backup);
 }
 function computeNode(node) {
@@ -1116,7 +1117,6 @@ function computeNode(node) {
       else
         return r + 1;
     }, 0);
-    console.log('count is ' + count);
     
     next.forEach(function(item, i) {
       if (item.computed)
@@ -1135,7 +1135,6 @@ function onClickDraw() {
   var nodes = {};
   var links = [];
   var orphan = [];
-  console.log(nodes);
   lines.forEach(function(line) {
     line = line.trim();
     var j = line.indexOf('-->');
@@ -1170,7 +1169,6 @@ function onClickDraw() {
     if (nodeA != nodeB) {
       if (nodeB.first)
         delete nodeB.first;
-      console.log(nodeA);
       nodeA.next.push(nodeB);
     }
 
