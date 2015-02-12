@@ -615,7 +615,8 @@ function drawArrow(c, x, y, angle) {
 }
 
 function canvasHasFocus() {
-  return (document.activeElement || document.body) == document.body;
+  console.log(document.activeElement == canvas);
+  return document.activeElement == canvas;
 }
 
 function drawText(c, originalText, x, y, angleOrNull, isSelected) {
@@ -841,8 +842,7 @@ window.onload = function() {
 var shift = false;
 
 function bindKey() {
-  canvas.addEventListener('keydown', function(e) {
-  alert('here');
+  canvas.onkeydown = function(e) {
   var key = crossBrowserKey(e);
 
   if (key == 16) {
@@ -873,17 +873,17 @@ function bindKey() {
 
   // backspace is a shortcut for the back button, but do NOT want to change pages
   if (key == 8) return false;
-}, false);
+};
 
-canvas.addEventListener('keyup', function(e) {
+canvas.onkeyup = function(e) {
   var key = crossBrowserKey(e);
 
   if (key == 16) {
     shift = false;
   }
-}, false);
+};
 
-canvas.addEventListener('keypress', function(e) {
+canvas.onkeypress = function(e) {
   // don't read keystrokes when other things have focus
   var key = crossBrowserKey(e);
   if (!canvasHasFocus()) {
@@ -900,7 +900,7 @@ canvas.addEventListener('keypress', function(e) {
     // backspace is a shortcut for the back button, but do NOT want to change pages
     return false;
   }
-}, false);
+};
 }
 
 function crossBrowserKey(e) {
@@ -938,9 +938,14 @@ function crossBrowserRelativeMousePos(e) {
 }
 
 function output(text) {
-  var element = document.getElementById('output');
-  element.style.display = 'block';
-  element.value = text;
+  if (text[0] == '<')
+    filename = 'fsm.svg';
+  else
+    filename = 'fsm.tex';
+  var pom = document.createElement('a');
+  pom.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+  pom.setAttribute('download', filename);
+  pom.click();
 }
 
 function saveAsPNG() {
@@ -949,7 +954,10 @@ function saveAsPNG() {
   drawUsing(canvas.getContext('2d'));
   selectedObject = oldSelectedObject;
   var pngData = canvas.toDataURL('image/png');
-  document.location.href = pngData;
+  var pom = document.createElement('a');
+  pom.setAttribute('href', pngData);
+  pom.setAttribute('download', 'fsm.png');
+  pom.click();
 }
 
 function saveAsSVG() {
