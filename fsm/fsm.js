@@ -1076,7 +1076,7 @@ function saveBackup() {
         'text': link.text,
         'anchorAngle': link.anchorAngle
       };
-      lines.push(link.node.text + ' -->' + (link.text && link.text.length ? ('[' + link.text + '] ') : ' ') + link.node.text);
+      lines.push(link.node.text + ' -->' + (link.text && link.text.length ? ('[' + link.text + '] ') : ' ') + link.node.text + (link.node.isAcceptState ? '.' : ''));
     } else if (link instanceof StartLink) {
       backupLink = {
         'type': 'StartLink',
@@ -1095,7 +1095,7 @@ function saveBackup() {
         'parallelPart': link.parallelPart,
         'perpendicularPart': link.perpendicularPart
       };
-      lines.push(link.nodeA.text + ' -->' + (link.text && link.text.length ? ('[' + link.text + '] ') : ' ') + link.nodeB.text);
+      lines.push(link.nodeA.text + ' -->' + (link.text && link.text.length ? ('[' + link.text + '] ') : ' ') + link.nodeB.text + (link.nodeB.isAcceptState ? '.' : ''));
     }
     if (backupLink != null) {
       backup.links.push(backupLink);
@@ -1140,6 +1140,7 @@ function onClickDraw() {
     var j = line.indexOf('-->');
     var name = line.substr(0, j).trim();
     var nodeA = nodes[name];
+    var accept = false;
     if (!nodeA) {
       nodes[name] = nodeA = new Node(0, 0);
       nodeA.first = true;
@@ -1160,10 +1161,15 @@ function onClickDraw() {
     }
 
     name = line.substr(j).trim();
+    if (name[name.length - 1] == '.') {
+      name = name.substr(0, name.length - 1);
+      accept = true;
+    }
     var nodeB = nodes[name];
     if (!nodeB) {
       nodes[name] = nodeB = new Node(0, 0);
       nodeB.text = name;
+      nodeB.isAcceptState = accept;
     }
 
     if (nodeA != nodeB) {
